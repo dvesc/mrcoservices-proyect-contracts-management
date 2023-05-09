@@ -1,0 +1,28 @@
+{
+  "definitions": {},	
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "create contract body",
+  "properties": {
+    "status":{
+      "type":"string",
+      "pattern": "^created|signed|canceled|completed"
+    },
+    "producer": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{24}$"
+    },
+    "consumer": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{24}$"
+    },
+    "arrival_address":{
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{24}$"
+    },
+    "estimated_for":{
+      "type":"string",
+      "pattern": "^([0-2][0-9]|3[0-1])(\/|-)(0[1-9]|1[0-2])\\2(\\d{4})$"
+    }
+  }
+}

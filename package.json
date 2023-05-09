@@ -1,0 +1,20 @@
+{
+  "name": "proyecto_v0",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless-offline": "^8.5.0"
+  },
+  "dependencies": {
+    "amqplib": "^0.9.1",
+    "aws-sdk": "^2.1137.0",
+    "querystring": "^0.2.1",
+    "uuid": "^8.3.2"
+  }
+}

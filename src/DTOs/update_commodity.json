@@ -1,0 +1,19 @@
+{
+  "definitions": {},	
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "title": "add commodity in contract body",
+  "properties": {
+    "commodity_id":{
+      "type":"string",
+      "pattern": "^[0-9a-fA-F]{24}$"
+    },
+    "amount":{
+      "type":"integer"
+    },
+    "unit":{
+      "type":"string",
+      "pattern": "^kg|t|lb|KG|T|LB$"
+    }
+  }
+}

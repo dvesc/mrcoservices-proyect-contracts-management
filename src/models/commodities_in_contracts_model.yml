@@ -1,0 +1,61 @@
+Resources:
+  commoditiesInContractsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      #nombre de la tabla
+      TableName: commodities-in-contracts   
+      AttributeDefinitions:
+        - AttributeName: id 
+          AttributeType: S #tipo str
+        - AttributeName: contract
+          AttributeType: S
+        - AttributeName: commodity
+          AttributeType: S
+        - AttributeName: deleted_at
+          AttributeType: S
+        #recordemos que aqui solo van los atributos que usamos como keys
+        
+      KeySchema:
+        #mi primary key
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      
+      GlobalSecondaryIndexes:
+        - IndexName: contract_index
+          KeySchema:
+            - AttributeName: contract
+              KeyType: HASH
+          #cuando use este index no quero que me traiga todo, solo unos atribuos
+          Projection: 
+            ProjectionType: INCLUDE 
+            NonKeyAttributes: [commodity,unit,amount]
+          ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+
+        - IndexName: commodity_index
+          KeySchema:
+            - AttributeName: commodity
+              KeyType: HASH
+          Projection: 
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+            
+        - IndexName: delete_at_index
+          KeySchema:
+            - AttributeName: deleted_at
+              KeyType: HASH
+          Projection: 
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1        
+        
+
+
+        

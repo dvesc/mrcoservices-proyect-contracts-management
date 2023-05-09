@@ -1,0 +1,125 @@
+service: aws-lambda-prueba-1
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-west-2
+  imRoleStatements: #Para darle permisos a serverless en x recurso
+    #Cola "contracts-mgmt" .  .  .  .  .  .  .  .  .  .  .  .  .
+    - Effect: Allow
+      Action: 
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl" 
+        - "sqs:ListQueues"
+      Resource: #el ARN de la cola 
+    #Cola "query-by-auth0-id" .  .  .  .  .  .  .  .  .  .  .  .
+    - Effect: Allow
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl" 
+        - "sqs:ListQueues"
+      Resource:
+      #Cola "email-msg" .  .  .  .  .  .  .  .  .  .  .  .  .  .
+    - Effect: Allow
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl" 
+        - "sqs:ListQueues"
+      Resource: 
+  apiGateway:
+    #para que en aws como nombre nos salga primero el nombre del servicio y luego el entorno
+    #ej : "aws-lambda-prueba-1-dev" y no "dev-aws-lambda-prueba-1"
+    shouldStartNameWithService: true
+ 
+plugins:
+  - serverless-offline
+
+
+
+
+
+#ROUTES------------------------------------------------------------------------
+functions:
+#Nombre de la funcion cuando la invoquemos
+  createContract:
+    #nombre de la funcion dentro del archivo .js
+    handler: src/controllers/contract_controllers.create_contract
+    events:
+      - httpApi:
+          path: /users/contracts
+          method: post
+          #con esto llamamos a la validacion del body
+          request:
+            schemas:
+              application/json: ${file(src/DTOs/create_contract_dto.json)}
+  getContract:
+    handler: src/controllers/contract_controllers.get_contract
+    events:
+        - httpApi:
+            path: /users/contracts
+            method: get
+  updateContract:
+    handler: src/controllers/contract_controllers.update_contract
+    events:
+        - httpApi:
+            path: /users/contracts/{contract_id}
+            method: put
+            request:
+              schemas:
+              application/json: ${file(src/DTOs/update_contract_dto.json)}
+  deleteContract:
+    handler: src/controllers/contract_controllers.delete_contracts
+    events:
+        - httpApi:
+            path: /users/contracts/{contract_id}
+            method: delete        
+#------------------------------------------------------------------------------
+  addCommodityInContract:
+    handler: src/controllers/commodities_in_contracts_controller.add_commodity
+    events:
+      - httpApi:
+          path: /users/contracts/commodites
+          method: post
+          request:
+            schemas:
+              application/json: ${file(src/DTOs/add_commodity.json)}
+  getCommoditiesInContract:
+    handler: src/controllers/commodities_in_contracts_controller.get_commodites_in_contracts
+    events:
+        - httpApi:
+            path: /users/contracts/commodites
+            method: get
+  updateCommodityInContract:
+    handler: src/controllers/commodities_in_contracts_controller.update_commodity
+    events:
+        - httpApi:
+            path: /users/contracts/commodites/{id}
+            method: put
+            request:
+              schemas:
+              application/json: ${file(src/DTOs/update_contract_dto.json)}
+  deleteCommodityInContract:
+    handler: src/controllers/commodities_in_contracts_controller.delete_commodities
+    events:
+        - httpApi:
+            path: /users/contracts/commodites/{id}
+            method: delete
+#------------------------------------------------------------------------------
+  triggeringSQSQueue: #este nombre lo puse yo
+    handler: src/controllers/triggering_controllers.consume_from_contracts_mgmt
+    events: 
+      - sqs: 
+          #El ARN de la cola
+          arn: "arn:aws:sqs:us-west-2:901499985641:contracts-mgmt"
+          batchSize: 1 #la cantidad necesaria de mensajes para activar la lambda
+          functionResponseType: ReportBatchItemFailures
+
+
+
+
+resources:
+  #tabla de contratos
+  - ${file(src/models/contracts_model.yml)}
+  #tabla de commodities en contratos
+  - ${file(src/models/commodities_in_contracts_model.yml)}

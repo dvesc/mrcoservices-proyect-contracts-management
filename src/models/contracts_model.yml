@@ -1,0 +1,106 @@
+Resources:
+  contractsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      #nombre de la tabla
+      TableName: contracts
+      #BillingMode: PAY_PER_REQUEST #como nos cobra amazon
+
+      #declaramos los atributos de la tabla
+      AttributeDefinitions:
+      #aqui van solo los atributos que usamos como keys (no todos)
+        - AttributeName: id 
+          AttributeType: S #tipo str
+        - AttributeName: producer
+          AttributeType: S
+        - AttributeName: consumer
+          AttributeType: S
+        - AttributeName: arrival_address
+          AttributeType: S
+        - AttributeName: estimated_for
+          AttributeType: S
+        - AttributeName: created_at
+          AttributeType: S 
+        - AttributeName: deleted_at
+          AttributeType: S
+    
+      #definimos las llave principal de la tabla
+      KeySchema:
+        #mi primary key
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+      #Definimos llaves secundarias (todos los demas atributos 
+      #que usaremos en los querys)
+      GlobalSecondaryIndexes:
+        - IndexName: producer_index
+          KeySchema:
+            - AttributeName: producer
+              KeyType: HASH
+            #cuando usemos este index ordenara por created_at
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection: 
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+
+        - IndexName: consumer_index
+          KeySchema:
+            - AttributeName: consumer
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection: 
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+            
+        - IndexName: arrival_address_index
+          KeySchema:
+            - AttributeName: arrival_address
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection: 
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+            
+        - IndexName: estimated_for_index
+          KeySchema:
+            - AttributeName: estimated_for
+              KeyType: HASH
+          Projection: 
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+            
+      
+        - IndexName: created_at_index
+          KeySchema:
+            - AttributeName: created_at
+              KeyType: HASH
+          Projection: 
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1        
+      
+  
+        - IndexName: deleted_at_index
+          KeySchema:
+            - AttributeName: deleted_at
+              KeyType: HASH
+          Projection: 
+            ProjectionType: ALL
+          ProvisionedThroughput: 
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1      
